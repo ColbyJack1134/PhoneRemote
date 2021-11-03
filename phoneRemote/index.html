@@ -1,0 +1,233 @@
+<html>
+
+<head>
+	<link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/symbola" type="text/css"/>
+	<style>
+    	:root {
+        	--width: 20vw;
+            --font: 5vw;
+            --checkbox: 1vw;
+            --top: 3%;
+        }
+    	body{
+        	background-color: black;
+            overflow: hidden;
+        }
+        #powerButton{
+        	z-index: 1;
+        	position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            
+            width: var(--width);
+            height: var(--width);
+            font-size: var(--font);
+            
+            border-radius: 50%;
+            font-family: 'SymbolaRegular';
+            background-color: #a32727;
+            color: white;
+        }
+        #volUpButton{
+            transform: rotate(-135deg);
+        }
+        #volUpButton span{
+			transform: rotate(135deg);
+        }
+        #volDownButton{
+            transform: rotate(45deg);
+        }
+        #volDownButton span{
+  			transform: rotate(-45deg);
+        }
+        #volMuteButton{
+            transform: rotate(-45deg);
+        }
+        #volMuteButton span{
+  			transform: rotate(45deg);
+            font-family: 'SymbolaRegular';
+        }
+        #pauseButton{
+            transform: rotate(135deg);
+        }
+        #pauseButton span{
+  			transform: rotate(-135deg);
+            font-family: 'SymbolaRegular';
+        }
+        #pauseBox{
+        	position: absolute;
+            left: 20%;
+            top: var(--top);
+            transform: translate(-50%, -50%);    
+            width: var(--checkbox);
+            height: var(--checkbox);
+        }
+        .buttonClass{
+        	position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: top left;
+            width: var(--width);
+            height: var(--width);
+            border-radius: 0 0 var(--width);
+            background-color: grey;
+        }
+        .buttonClass span{
+        	display: inline-block;
+            font-size: var(--font);
+        }
+        
+        #checkboxHolder{
+        	position: absolute;
+            left: 50%;
+            top: var(--top);
+            transform: translate(-50%, -50%);
+            background-color: red;
+        }
+        #checkboxHolder input{
+       		width: var(--checkbox);
+            height: var(--checkbox);
+        }
+        #customCommandContainer{
+        	position: absolute;
+        	left: 80%;
+            top: var(--top);
+            transform: translate(-50%, -50%);
+        }
+        #customCustomCommand{
+        	display: none;
+        }
+    
+    </style>
+
+</head>
+
+<body>
+	<div id="checkboxHolder">
+    	<input type="checkbox" onclick="checkCheckboxes();">
+        <input type="checkbox" onclick="checkCheckboxes();">
+        <input type="checkbox" onclick="checkCheckboxes();">
+    </div>
+    
+    <button type="button" id="powerButton" disabled=true onclick="sendData('Power Off');">&#9211;</button>
+    <button type="button" id="volUpButton" class="buttonClass" onclick="sendData('Increase');"><span>+</span></button>
+    <button type="button" id="volDownButton" class="buttonClass" onclick="sendData('Decrease');"><span>-</span></button>
+    <button type="button" id="volMuteButton" class="buttonClass" onclick="sendData('Mute');"><span>&#128263;</span></button>
+    <button type="button" id="pauseButton" class="buttonClass" onclick="sendData('Pause');"><span>&#9208;</span></button>
+    <input type="checkbox" id="pauseBox" onclick="mediaToSpace();">
+    
+    <div id="customCommandContainer">
+    	<select id="customCommand" onchange="checkIfCustom();">
+        	<option value="Alt_Tab">Alt_Tab</option>
+            <option value="Alt_F4">Alt_F4</option>
+            <option value="Brooklyn99">Brooklyn99</option>
+            <option value="Ctrl_W">Ctrl_W</option>
+            <option value="Enter">Enter</option>
+            <option value="Google">Google</option>
+            <option value="Mouse_1">Mouse_1</option>
+            <option value="Move_Mouse_Away">Move_Mouse_Away</option>
+            <option value="Move_Mouse_Left">Move_Mouse_Left</option>
+            <option value="Move_Mouse_Right">Move_Mouse_Right</option>
+            <option value="Move_Mouse_Up">Move_Mouse_Up</option>
+            <option value="Move_Mouse_Down">Move_Mouse_Down</option>
+            <option value="Open_URL_Incogneto">Open_URL_Incogneto</option>
+            <option value="Open_URL">Open_URL</option>
+            <option value="Shift_Tab">Shift_Tab</option>
+            <option value="Skip_Intro">Skip_Intro</option>
+            <option value="Tab">Tab</option>
+            <option value="Win_D">Win_D</option>
+            <option value="Win_Up">Win_Up</option>
+            
+            <option value="">Clear</option>
+            <option value="Custom">Custom</option>
+        </select>
+ 		<button type="button" id="customCommandButton" onclick="sendCustomData();"><span>-></span></button>
+        <br>
+        <input type="text" id="customCustomCommand">
+   	</div>
+    
+    
+	<script>
+    	let root = document.documentElement;
+        
+        decideSize();
+        setInterval(function(){decideSize();}, 500);
+        function decideSize(){
+          if(document.body.clientWidth > document.body.clientHeight){
+              root.style.setProperty("--width", "20vw");
+              root.style.setProperty("--font", "5vw");
+              root.style.setProperty("--checkbox", "1vw");
+              root.style.setProperty("--top", "3%");
+          }
+          else{
+              root.style.setProperty("--width", "20vh");
+              root.style.setProperty("--font", "5vh");
+              root.style.setProperty("--checkbox", "3vh");
+              root.style.setProperty("--top", "20%");
+          }
+        }
+        function checkCheckboxes(){
+        	var boxes = document.getElementById("checkboxHolder").getElementsByTagName("input");
+            for(var i = 0; i < boxes.length; i++){
+            	if(!boxes[i].checked){
+                	document.getElementById("powerButton").disabled = true;
+                	return;
+              	}
+            }
+            document.getElementById("powerButton").disabled = false;
+        }
+    	function mediaToSpace(){
+        	if(document.getElementById("pauseBox").checked){
+            	document.getElementById("pauseButton").onclick = function() { sendData('Space'); };
+                return;
+            }
+            document.getElementById("pauseButton").onclick = function() { sendData('Pause'); };
+        }
+        function sendCustomData(){
+        	data = document.getElementById("customCommand").value;
+            
+            if(data == "Custom"){
+            	sendData(document.getElementById("customCustomCommand").value);
+                document.getElementById("customCustomCommand").value = "";
+                return;
+            }
+            else if(data == "Open_URL" || data == "Google" || data == "Open_URL_Incogneto" || data == "Move_Mouse_Left" || data == "Move_Mouse_Right" || data == "Move_Mouse_Up" || data == "Move_Mouse_Down"){
+            	sendData(data + " " + document.getElementById("customCustomCommand").value);
+                document.getElementById("customCustomCommand").value = "";
+                return;
+            }
+            sendData(data);
+            //document.getElementById("customCommand").value = "";
+        }
+        function checkIfCustom(){
+        	data = document.getElementById("customCommand").value;
+            if(data == "Custom" || data == "Open_URL" || data == "Google" || data == "Open_URL_Incogneto" || data == "Move_Mouse_Left" || data == "Move_Mouse_Right" || data == "Move_Mouse_Up" || data == "Move_Mouse_Down"){
+            	document.getElementById("customCustomCommand").style.display = "initial";
+            }
+            else{
+            	document.getElementById("customCustomCommand").style.display = "none";
+            }
+        }
+    
+    	function sendData(dataToSend){
+          var url = "https://itsokayboomer.com/phoneRemote/endpoint.php";
+
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", url, true);
+
+          xhr.setRequestHeader("Content-Type", "application/json", true);
+
+          xhr.onreadystatechange = function () {
+             if (xhr.readyState === 4) {
+                console.log(xhr.status);
+                console.log(xhr.responseText);
+             }};
+
+          xhr.send(dataToSend);
+        }
+        
+    </script>
+</body>
+
+</html>
